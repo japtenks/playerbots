@@ -2398,7 +2398,7 @@ void PlayerbotAI::ResetStrategies(bool autoLoad)
     AiFactory::AddDefaultNonCombatStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_NON_COMBAT]);
     AiFactory::AddDefaultDeadStrategies(bot, this, engines[(uint8)BotState::BOT_STATE_DEAD]);
     AiFactory::AddDefaultReactionStrategies(bot, this, reactionEngine);
-    if (autoLoad && HasPlayerRelation()) sPlayerbotDbStore.Load(this);
+    if (autoLoad) sPlayerbotDbStore.Load(this); // spp: guild flavor — load DB overrides for all bots, not just player-related ones
 
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
