@@ -51,7 +51,7 @@ bool CleanQuestLogAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     std::string link = event.getParam();
-    if (ai->HasActivePlayerMaster())
+    if (ai->IsAlt() && ai->HasActivePlayerMaster())
         return false;
 
     uint8 totalQuests = 0;
