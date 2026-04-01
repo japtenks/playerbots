@@ -9,6 +9,9 @@
 #include "playerbot/TravelMgr.h"
 #include "CheckMountStateAction.h"
 #include "TellLosAction.h"
+#include "playerbot/strategy/values/ItemUsageValue.h"
+#include "playerbot/strategy/values/ItemCountValue.h"
+#include "playerbot/TravelMgr.h"
 
 using namespace ai;
 
@@ -632,6 +635,12 @@ bool UseAction::UseItemInternal(Player* requester, uint32 itemId, Unit* unit, Ga
 
         if (validTarget)
         {
+            // Validate spellInfo is a proper sSpellTemplate entry before constructing (mirrors MANGOS_ASSERT in Spell::Spell)
+            if (!spellInfo || spellInfo != sSpellTemplate.LookupEntry<SpellEntry>(spellInfo->Id))
+            {
+                continue;
+            }
+
             // Use triggered flag only for items with many spell casts and for not first cast
             BotUseItemSpell* spell = new BotUseItemSpell(bot, spellInfo, (successCasts > 0) ? TRIGGERED_OLD_TRIGGERED : TRIGGERED_NONE);
             spell->m_clientCast = true;
@@ -729,7 +738,6 @@ bool UseAction::UseItemInternal(Player* requester, uint32 itemId, Unit* unit, Ga
                 replyStr << " " << BOT_TEXT("command_target_self");
             }
 
-            // Stackable
             if (itemUsed && proto->Stackable > 1)
             {
                 uint32 count = itemUsed->GetCount();
@@ -746,7 +754,9 @@ bool UseAction::UseItemInternal(Player* requester, uint32 itemId, Unit* unit, Ga
 
             ai->TellPlayerNoFacing(requester, BOT_TEXT2(replyStr.str(), replyArgs), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
-        
+
+        ai::InvalidateItemCountCache(bot);
+
         return true;
     }
     else
